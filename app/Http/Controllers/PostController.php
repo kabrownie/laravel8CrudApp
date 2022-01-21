@@ -13,7 +13,10 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {$data = Post::latest()->paginate(5);
+
+        return view('posts.index',compact('data'))
+        ->with('i',(request()->input('page',1) -1)*5);
         //
     }
 
@@ -23,7 +26,9 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
+
     {
+        return view('posts.create');
         //
     }
 
@@ -35,6 +40,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required',
+            'description' =>'required',
+        ]);
+        Post::create($request->all());
+        return redirect()->route('posts.index')
+                ->with('success','Post updated successfuly');
+
         //
     }
 
@@ -79,7 +92,8 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Post $post)
-    {
+    {$post->delete();
+        return redirect()->route('posts.index')-> with ('success','Post deleted successfully');
         //
     }
 }
